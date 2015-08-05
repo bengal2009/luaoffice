@@ -13,7 +13,7 @@ function FontLib.fromhex(str)
     end))
 end
 function FontLib.arraycall(str)
-return(FontLib.fromhex(Font[str]))
+return(FontLib.fromhex(Font [str]))
 end
 
 return FontLib

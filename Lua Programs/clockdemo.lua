@@ -19,17 +19,20 @@ end
 function draw() 
 prepare()
 for i=0,5,1 do
-disp:drawXBM(i*16,0,16,16, FontLib.arraycall("林"))
+disp:drawXBM(i*16,0,16,16, myfont.arraycall("在"))
 end
-disp:drawStr( 10+i*5,10+i*5, "Benny123!") 
+disp:drawStr( 10+i*5,20+i*5, "Benny123!") 
 disp:drawPixel(60,32)
  tmr.wdclr()
 end
 
 init_i2c_display()
+
 tmr.alarm(2, 500, 1, function()
+
 disp:firstPage()
           repeat
+
 draw() 
 
          until disp:nextPage() == false
