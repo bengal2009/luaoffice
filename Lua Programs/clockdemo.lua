@@ -19,7 +19,7 @@ end
 function draw() 
 prepare()
 for i=0,5,1 do
-disp:drawXBM(i*16,0,16,16,myfont.fromhex(s2))
+disp:drawXBM(i*16,0,16,16, FontLib.arraycall("林"))
 end
 disp:drawStr( 10+i*5,10+i*5, "Benny123!") 
 disp:drawPixel(60,32)
@@ -38,5 +38,4 @@ if (i>7) then
  tmr.stop(2)
 end
 end)
-print(myfont.arraycall("林"))
  print("Done")

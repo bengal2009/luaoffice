@@ -13,9 +13,7 @@ function FontLib.fromhex(str)
     end))
 end
 function FontLib.arraycall(str)
-print("CALL" )
-return(Font[str])
-
+return(FontLib.fromhex(Font[str]))
 end
 
 return FontLib
