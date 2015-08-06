@@ -26,5 +26,29 @@ function FontLib.arraycall(str)
 return(FontLib.fromhex(Font [str]))
 
 end
+function FontLib.invertarraycall(str)
 
+return(FontLib.inverthex(Font [str]))
+
+end
+local function BitXOR(a,b)--Bitwise xor
+    local p,c=1,0
+    while a>0 and b>0 do
+        local ra,rb=a%2,b%2
+        if ra~=rb then c=c+p end
+        a,b,p=(a-ra)/2,(b-rb)/2,p*2
+    end
+    if a<b then a=b end
+    while a>0 do
+        local ra=a%2
+        if ra>0 then c=c+p end
+        a,p=(a-ra)/2,p*2
+    end
+    return c
+end
+function FontLib.inverthex(str)
+    return (str:gsub('..', function (cc)
+        return string.char(BitXOR(tonumber(cc, 16),255))
+    end))
+end
 return FontLib
