@@ -42,30 +42,24 @@ function prepare()
      disp:setDefaultForegroundColor()
      disp:setFontPosTop()
 end
-function draw(loopcnt) 
-prepare()
-DrawCStr(0,0,"现在时间12",1)
-DrawCStr(16,16,"现在时间:".."2",0)
-dispstrtest(loopcnt)
+countstr=1
+function draw() 
+DrawCStr(16,32,"现在时间:"..tostring(countstr),0)
  --disp:setScale2x2()
 --disp:undoScale()
-end
-function dispstrtest(loopcnt)
- DrawCStr(16,32,"现在时间:"..loopcnt,0)
-print(node.heap())
-end
---disp:drawStr( 16,35, "Benny123!") 
-disp:drawPixel(60,32)
-
+tmr.wdclr()
 end
 init_i2c_display()
-for loopcnt = 1, 10, 1 do
+
+for j=1,10,1 do
 disp:firstPage()
-        repeat
-draw(loopcnt) 
+countstr=j
+repeat
+draw() 
 until disp:nextPage() == false
-tmr.delay(10000)
+--tmr.delay(500)
 tmr.wdclr()
 end
 print(node.heap())
 print("Done")
+tmr.wdclr()
