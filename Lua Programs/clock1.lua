@@ -1,4 +1,10 @@
 myfont=require("FontLib")
+ds3231=require("ds3231")
+ds3231.init(5, 6)
+second1, minute1, hour1, day1, date1, month1, year1 = ds3231.getTime();
+datestr=string.format("%s:%s:%s",hour1, minute1, second1)
+print(string.format("Time & Date: %s:%s:%s %s/%s/%s", 
+    hour1, minute1, second1, date1, month1, year1))
 local TimeVal=0
 i=0
 function DrawCStr(X1,Y1,a1,bit)
@@ -44,16 +50,19 @@ function prepare()
 end
 countstr=1
 function draw() 
-DrawCStr(16,32,"现在时间:"..tostring(countstr),0)
+DrawCStr(0,0,"现在时间:"..countstr,0)
+DrawCStr(16,32,datestr,0)
  --disp:setScale2x2()
 --disp:undoScale()
 tmr.wdclr()
 end
 init_i2c_display()
 
-for j=1,10,1 do
-disp:firstPage()
+for j=1,3,1 do
+
 countstr=j
+disp:firstPage()
+
 repeat
 draw() 
 until disp:nextPage() == false
@@ -63,3 +72,7 @@ end
 print(node.heap())
 print("Done")
 tmr.wdclr()
+ds3231 = nil
+myfont = nil
+package.loaded["ds3231"]=nil
+package.loaded["FontLib"]=nil
