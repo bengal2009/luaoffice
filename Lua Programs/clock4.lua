@@ -56,12 +56,12 @@ end
 
 --ALARM
 Temp=""
-init_i2c_display()
+
 tmr.alarm(2, 1000, 1, function()
 s1=RDTIME()
 print(s1)
 if Temp~=s1 then
-
+init_i2c_display()
 disp:firstPage()
 repeat
 draw(s1) 
@@ -74,7 +74,6 @@ end)
 function draw(s2) 
 DrawCStr(0,0,"现在时间:",0)
 DrawCStr(16,32,s2,0)
-Temp=s2
 end
 
 --ds3231 = nil
