@@ -18,11 +18,13 @@ Font[":"]="00000000000018180000000018180000"
 Font["/"]="00004020202010100808080404020200"
 Font["\\"]="00000204040408080810102020204040"
 function FontLib.fromhex(str)
+--if str==nil then return end
     return (str:gsub('..', function (cc)
         return string.char(tonumber(cc, 16))
     end))
 end
 function FontLib.arraycall(str)
+--if str==nil then return end
 --print("STR:"..str..Font [str])
 return(FontLib.fromhex(Font [str]))
 
@@ -45,6 +47,7 @@ local function BitXOR(a,b)--Bitwise xor
         if ra>0 then c=c+p end
         a,p=(a-ra)/2,p*2
     end
+tmr.wdclr()
     return c
 end
 function FontLib.inverthex(str)

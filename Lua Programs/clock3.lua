@@ -1,15 +1,18 @@
 myfont=require("FontLib")
 ds3231=require("ds3231")
+dispstr=""
+s1="123"
 function RDTIME()
 ds3231.init(5, 6)
 second, minute, hour, day, date, month, year = ds3231.getTime();
 
 --print(string.format("Time & Date: %s:%s:%s %s/%s/%s", 
 --    hour, minute, second, date, month, year))
-print(string.format("%s:%s:%s ", 
-    hour, minute, second))
--- Don't forget to release it after use
+dispstr=string.format("%s:%s:%s",  hour, minute, second)
+return dispstr
 end
+
+
 function DrawCStr(X1,Y1,a1,bit)
 local i = 1
 local tempX=0
@@ -36,6 +39,7 @@ tempX=tempX+8
    i=i+1
    end
 end
+tmr.wdclr()
 end
 function init_i2c_display()
      -- SDA and SCL can be assigned freely to available GPIOs
@@ -47,20 +51,34 @@ function init_i2c_display()
 end
 
 
-function draw() 
-DrawCStr(0,0,"现在时间:",0)
-end
---Display
+
+
+
+--ALARM
+Temp=""
+tmr.alarm(2, 1000, 1, function()
+s1=RDTIME()
+print(s1)
+if Temp~=s1 then
 init_i2c_display()
 disp:firstPage()
 repeat
-draw() 
+draw(s1) 
 until disp:nextPage() == false
+end
+Temp=s1
 tmr.wdclr()
-
---ALARM
-tmr.alarm(2, 1000, 1, function()
-RDTIME()
 end)
+
+function draw(s2) 
+--if s2==nil then return end
+--if Temp~=s2 then
+--print("DRAW:"..s2)
+DrawCStr(0,0,"现在时间:",0)
+DrawCStr(16,32,s2,0)
+--end
+Temp=s2
+end
+
 --ds3231 = nil
 --package.loaded["ds3231"]=nil
