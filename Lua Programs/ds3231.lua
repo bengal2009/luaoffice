@@ -71,6 +71,25 @@ function M.setTime(second, minute, hour, day, date, month, year)
   i2c.write(id, decToBcd(year))
   i2c.stop(id)
 end
+function M.SecondsToClock(seconds)
+  local seconds = tonumber(seconds)
+
+  if seconds <= 0 then
+    return "00:00:00";
+  else
+    hours = string.format("%02d", math.floor(seconds/3600));
+    mins = string.format("%02d", math.floor(seconds/60 - (hours*60)));
+    secs = string.format("%02d", math.floor(seconds - hours*3600 - mins *60));
+    return hours..":"..mins..":"..secs
+  end
+end
+
+function M.ClockToSeconds(HH,MM,SS)
+local hours = tonumber(HH)
+local minutes = tonumber(MM)
+local seconds = tonumber(SS)
+return seconds+minutes*60+hours*3600
+end
 
 return M
 

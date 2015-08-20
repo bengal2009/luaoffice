@@ -12,5 +12,5 @@ wifi.sta.config("CM-1","XXXX")
  end
  end)
 loadfile("ntp.lua")():sync(function(T) print(T:show_time()) end)
-print(string.len("林1"))
+ print(os.clock())
 
