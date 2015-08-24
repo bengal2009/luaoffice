@@ -1,4 +1,5 @@
 --node.compile("ds3231.lua")
+node.compile("FontLib.lua")
 ds3231=require("ds3231")
 myfont=require("FontLib")
 function RDTIME()

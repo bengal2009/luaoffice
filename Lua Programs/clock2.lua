@@ -1,47 +1,20 @@
-myfont=require("FontLib")
-
-local TimeVal=0
-i=0
-
-function RDTime()
+--node.compile("ds3231.lua")
 ds3231=require("ds3231")
+myfont=require("FontLib")
+function RDTIME()
 ds3231.init(5, 6)
-second1, minute1, hour1, day1, date1, month1, year1 = ds3231.getTime();
-datestr=string.format("%s:%s:%s",hour1, minute1, second1)
-print(string.format("Time & Date: %s:%s:%s %s/%s/%s", 
-    hour1, minute1, second1, date1, month1, year1))
-ds3231 = nil
-print("DATESTR"..datestr)
-return datestr
+second, minute, hour, day, date, month, year = ds3231.getTime();
+RDSTR=string.format("%02d:%02d:%02d",  hour, minute, second)
+return RDSTR
 end
-print(RDTime)
-function DrawCStr(X1,Y1,a1,bit)
-local i = 1
-local tempX=0
-    while i<=#a1 do
- local curByte = string.byte(a1, i)
- if curByte>127 then 
--- print("I"..i..string.sub(a1,i,i+2))
-if(bit==0) then
-disp:drawXBM(X1+tempX,Y1,16,16, myfont.arraycall(string.sub(a1,i,i+2)))
-else
-disp:drawXBM(X1+tempX,Y1,16,16, myfont.invertarraycall(string.sub(a1,i,i+2)))
-
+--prepare
+function prepare()
+     disp:setFont(u8g.font_6x10)
+     disp:setFontRefHeightExtendedText()
+     disp:setDefaultForegroundColor()
+     disp:setFontPosTop()
 end
-      i = i + 3
-tempX=tempX+16
-   else
---print("I"..i.."str:"..string.sub(a1,i,i))
-if(bit==0) then
-disp:drawXBM(X1+tempX,Y1,8,16, myfont.arraycall(string.sub(a1,i,i)))
-else
-disp:drawXBM(X1+tempX,Y1,8,16, myfont.invertarraycall(string.sub(a1,i,i)))
-end
-tempX=tempX+8
-   i=i+1
-   end
-end
-end
+-- setup I2c and connect display
 function init_i2c_display()
      -- SDA and SCL can be assigned freely to available GPIOs
      local sda = 4 -- GPIO14
@@ -50,37 +23,71 @@ function init_i2c_display()
      i2c.setup(0, sda, scl, i2c.SLOW)
      disp = u8g.ssd1306_128x64_i2c(sla)
 end
-function prepare()
-     disp:setFont(u8g.font_6x10)
-     disp:setFontRefHeightExtendedText()
-     disp:setDefaultForegroundColor()
-     disp:setFontPosTop()
+function DrawCStr(X1,Y1,a1)
+local i = 1
+local tempX=0
+    while i<=#a1 do
+ local curByte = string.byte(a1, i)
+ if curByte>127 then 
+-- print("I"..i..string.sub(a1,i,i+2))
+disp:drawXBM(X1+tempX,Y1,16,16, myfont.arraycall(string.sub(a1,i,i+2)))
+      i = i + 3
+tempX=tempX+16
+   else
+--print("I"..i.."str:"..string.sub(a1,i,i))
+disp:drawXBM(X1+tempX,Y1,8,16, myfont.arraycall(string.sub(a1,i,i)))
+tempX=tempX+8
+   i=i+1
+   end
+ tmr.wdclr()
 end
-countstr=1
-function draw() 
-DrawCStr(0,0,"现在时间:"..countstr,0)
---DrawCStr(16,32,datestr,0)
- --disp:setScale2x2()
---disp:undoScale()
-tmr.wdclr()
 end
+-- the draw() routine
+function draw(dispstr,DATESTR)
+--disp:drawBox(0, 0, 50, 50)
+--DrawCStr(50,0,DATESTR)
+--DrawCStr(50,32,dispstr)
+disp:setScale2x2()
+disp:drawStr(0,0,DATESTR)
+disp:drawStr(0,16,dispstr)
+disp:undoScale()
+end
+
+function graphics_test(RDSTR2,DATESTR)
+if RDSTR2=="" then return end
+          disp:firstPage()
+          repeat
+               draw(RDSTR2,DATESTR)
+          until disp:nextPage() == false
+          --print(node.heap())
+          --tmr.delay(delay)
+          -- re-trigger Watchdog!
+          tmr.wdclr()
+end
+
+--init_i2c_display()
+--for k=1,2,1 do
+--graphics_test("11:"..k)
+--end 
+ds3231.init(5, 6)
+second, minute, hour, day, date, month, year = ds3231.getTime();
+seconds=ds3231.ClockToSeconds( hour, minute,second)
+datestr=string.format("20%s/%s/%s",  year, month,date)
+print("DATE:"..datestr)
 init_i2c_display()
-
-for j=1,1,1 do
-
-countstr=j
-disp:firstPage()
-
-repeat
-draw() 
-until disp:nextPage() == false
---tmr.delay(500)
-tmr.wdclr()
-end
-print(node.heap())
-print("Done")
-tmr.wdclr()
+--ALARM
+count=0
+prepare()
+tmr.alarm(2,1000,1,function()
+graphics_test(ds3231.SecondsToClock(seconds),datestr)
+seconds=seconds+1
+count=count+1
+--if count>180 then 
+tmr.stop(2) 
 ds3231 = nil
 myfont = nil
 package.loaded["ds3231"]=nil
 package.loaded["FontLib"]=nil
+end
+   tmr.wdclr()
+end)
